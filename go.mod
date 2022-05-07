@@ -1,1 +1,3 @@
-module "TrainingCamp"
+module TrainingCamp
+
+go 1.16
