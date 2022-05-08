@@ -13,21 +13,23 @@ import (
 	"time"
 )
 
-func getMD5(content string)string{
+//TODO sign解析未完成
+func getMD5(content string) string {
 	data := []byte(content)
 	has := md5.Sum(data)
 	md5str := fmt.Sprintf("%x", has) //将[]byte转成16进制
 	return md5str
 }
+
 //暂未破解成功，这个sign不清楚怎么获得
-func getYoudaoHeader(text string)(header string)  {
-	salt := strconv.FormatInt(time.Now().UnixNano() / 1e5,10)
-	sign_str := "fanyideskweb" + text +salt + "Ygy_4c=r#e#4EX^NUGUc5"
+func getYoudaoHeader(text string) (header string) {
+	salt := strconv.FormatInt(time.Now().UnixNano()/1e5, 10)
+	sign_str := "fanyideskweb" + text + salt + "Ygy_4c=r#e#4EX^NUGUc5"
 	sign := getMD5(sign_str)
 	//fmt.Println(sign)
 	//fmt.Println(salt)
 	var requestText = `i=%s&from=AUTO&to=AUTO&smartresult=dict&client=fanyideskweb&salt=%s&sign=%s&lts=1651919604941&bv=c2777327e4e29b7c4728f13e47bde9a5&doctype=json&version=2.1&keyfrom=fanyi.web&action=FY_BY_REALTlME`
-	header = fmt.Sprintf(requestText,salt,sign,text)
+	header = fmt.Sprintf(requestText, salt, sign, text)
 	return
 }
 
@@ -75,11 +77,11 @@ func QueryYoudao(word string) {
 	//打印翻译答案
 	fmt.Println("translate from Youdao:")
 	for _, item := range dictResponse.TranslateResult {
-		for _,text := range item {
+		for _, text := range item {
 			fmt.Println(text.Tgt)
 		}
 	}
-	for _,item := range dictResponse.SmartResult.Entries{
+	for _, item := range dictResponse.SmartResult.Entries {
 		fmt.Print(item)
 	}
 }

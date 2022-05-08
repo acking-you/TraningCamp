@@ -8,13 +8,15 @@ import (
 	"log"
 	"net"
 )
-const(
+
+const (
 	socks5Ver = 0x05
-	cmdBind = 0x01
-	atypIPV4 = 0x01
+	cmdBind   = 0x01
+	atypIPV4  = 0x01
 	atypeHOST = 0x03
 	atypeIPV6 = 0x04
 )
+
 func main() {
 	server, err := net.Listen("tcp", "0.0.0.0:1080")
 	if err != nil {
@@ -38,35 +40,40 @@ func process(conn net.Conn) {
 	}()
 
 	reader := bufio.NewReader(conn)
-	err := auth(reader,conn)
-	if err!=nil{
-		log.Printf("client %v auth failed:%v",conn.RemoteAddr(),err)
+	err := auth(reader, conn)
+	if err != nil {
+		log.Printf("client %v auth failed:%v", conn.RemoteAddr(), err)
 	}
 	log.Println("auth success")
 }
 
 func auth(reader *bufio.Reader, conn net.Conn) (err error) {
-	ver,err := reader.ReadByte()
-	if err != nil{
-		return fmt.Errorf("read ver failed:%w",err)
+	//协议版本
+	ver, err := reader.ReadByte()
+	if err != nil {
+		return fmt.Errorf("read ver failed:%w", err)
 	}
-	if ver != socks5Ver{
-		return fmt.Errorf("not supported ver:%v",ver)
+	if ver != socks5Ver {
+		return fmt.Errorf("not supported ver:%v", ver)
 	}
-	methodSize,err := reader.ReadByte()
-	if err!=nil{
-		return fmt.Errorf("read methodSize failed:%w",err)
-	}
-	method := make([]byte,methodSize)
-	_,err = io.ReadFull(reader,method)
-	if err!=nil{
-		return fmt.Errorf("read method failed %w",err)
-	}
-	log.Println("ver",ver,"method",method)
 
-	_,err = conn.Write([]byte{socks5Ver,0x00})
-	if err !=nil{
-		return fmt.Errorf("write failed:%w",err)
+	//支持的方法数量
+	methodSize, err := reader.ReadByte()
+	if err != nil {
+		return fmt.Errorf("read methodSize failed:%w", err)
+	}
+	//方法值
+	method := make([]byte, methodSize)
+	_, err = io.ReadFull(reader, method)
+	if err != nil {
+		return fmt.Errorf("read method failed %w", err)
+	}
+	log.Println("ver", ver, "method", method)
+
+	//返回的内容表示SOCKS5通信，且无需认证
+	_, err = conn.Write([]byte{socks5Ver, 0x00})
+	if err != nil {
+		return fmt.Errorf("write failed:%w", err)
 	}
 	return nil
 }

@@ -92,6 +92,7 @@ func auth(reader *bufio.Reader, conn net.Conn) (err error) {
 	return nil
 }
 
+//请求阶段完成后立马进行转发阶段（因为请求阶段就已经拿到了目标的服务器的ip和端口了
 func connect(reader *bufio.Reader, conn net.Conn) (err error) {
 	// +----+-----+-------+------+----------+----------+
 	// |VER | CMD |  RSV  | ATYP | DST.ADDR | DST.PORT |
@@ -149,6 +150,7 @@ func connect(reader *bufio.Reader, conn net.Conn) (err error) {
 	}
 	port := binary.BigEndian.Uint16(buf[:2])
 
+	//通过net.Dial和目标服务器进行tcp连接
 	dest, err := net.Dial("tcp", fmt.Sprintf("%v:%v", addr, port))
 	if err != nil {
 		return fmt.Errorf("dial dst failed:%w", err)
@@ -167,13 +169,18 @@ func connect(reader *bufio.Reader, conn net.Conn) (err error) {
 	// ATYPE 地址类型
 	// BND.ADDR 服务绑定的地址
 	// BND.PORT 服务绑定的端口DST.PORT
+
+	// 由于这里是同步过程，故是等到请求阶段完成后再往下进行的转发阶段
 	_, err = conn.Write([]byte{0x05, 0x00, 0x00, 0x01, 0, 0, 0, 0, 0, 0})
 	if err != nil {
 		return fmt.Errorf("write failed: %w", err)
 	}
+
+	//context没用过，还不太清楚这里的用法
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	//标准库的 io.copy 可以实现一个单向数据转发，双向转发的话，需要启动两个 goroutinue。
 	go func() {
 		_, _ = io.Copy(dest, reader)
 		cancel()
