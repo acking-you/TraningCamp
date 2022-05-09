@@ -29,10 +29,10 @@ func NewQueryPageInfoFlow(id int64) *QueryPageInfoFlow {
 	return &QueryPageInfoFlow{topicId: id}
 }
 
-// Do 逐个流式初始化
+// Do 整个组装过程
 func (q *QueryPageInfoFlow) Do() (*PageInfo, error) {
 	//对id进行合法性验证
-	if err := q.checkNum(q.topicId); err != nil {
+	if err := q.checkNum(); err != nil {
 		return nil, err
 	}
 	//准备好生成PageInfo的数据
@@ -46,8 +46,8 @@ func (q *QueryPageInfoFlow) Do() (*PageInfo, error) {
 	return q.pageInfo, nil
 }
 
-func (q *QueryPageInfoFlow) checkNum(id int64) error {
-	if id <= 0 {
+func (q *QueryPageInfoFlow) checkNum() error {
+	if q.topicId <= 0 {
 		return errors.New("topic must larger than 0")
 	}
 	return nil

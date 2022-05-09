@@ -5,18 +5,17 @@ import (
 	"sync"
 )
 
-func hello(i int) {
-	println("hello world : " + fmt.Sprint(i))
+func hello() {
+	fmt.Println("hello")
 }
-
 func ManyGo() {
 	var wg sync.WaitGroup
+	wg.Add(5)
 	for i := 0; i < 5; i++ {
-		wg.Add(1)
-		go func(j int) {
+		go func() {
 			defer wg.Done()
-			hello(j)
-		}(i)
+			hello()
+		}()
 	}
 	wg.Wait()
 }

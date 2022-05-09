@@ -11,9 +11,12 @@ import (
 //最后再通过gin框架搭建服务器
 
 func main() {
+	//准备数据
 	if err := Init("./lesson2/homework/data/"); err != nil {
 		os.Exit(-1)
 	}
+
+	//注册路由
 
 	r := gin.Default()
 	r.GET("me:id", func(c *gin.Context) {
@@ -38,7 +41,6 @@ func main() {
 	if err != nil {
 		return
 	}
-
 }
 
 func Init(filepath string) error {

@@ -13,7 +13,6 @@ func NumUnmarshal() {
 	fmt.Printf("%T\n", res["id"])
 	i := res["id"].(int64)
 	fmt.Println(i)
-
 }
 
 func NumDecode() {
@@ -24,5 +23,4 @@ func NumDecode() {
 	_ = decoder.Decode(&res)
 	i, _ := res["id"].(json.Number).Int64()
 	fmt.Println(i)
-
 }

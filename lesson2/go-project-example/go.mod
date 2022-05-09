@@ -3,6 +3,7 @@ module github.com/Moonlight-Zhao/go-project-example
 go 1.16
 
 require (
+	github.com/bytedance/gopkg v0.0.0-20220509134931-d1878f638986 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.3.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
